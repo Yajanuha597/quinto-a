@@ -1,13 +1,12 @@
-
-name: Python application hello-yajanuha:1.0.0
+name: Python application start 
 
 on:
   push:
     branches: [ "main" ]
-
+  
 permissions:
   contents: read
-  packages: write
+  packages: write 
 
 jobs:
   build:
@@ -21,23 +20,30 @@ jobs:
       with:
         python-version: "3.12"
     - name: Install dependencies
-      run: pip install -r requirements.txt
-      
-
-    - name: Test with pytest
-      run: pytest
+      run: |
+        pip install -r requirements.txt
+        pip install pytest
 
     - name: Ejecutar la app
-      run: python app.py
+      run: |
+        python app.py
+        
+    - name: Test with pytest
+      run: |
+        pytest
+        
+    - name: simulacion del deploy
+      run: |
+        echo "simular que se esta desplegando la aplicacion en un servidor"
 
-    - name: Simular el deploy
-      run: echo "Simular que se esta desplegando"
+    - name: construir la imagen de docker
+      run: |
+        docker build -t ghcr.io/ronalfcito/hello-yajanuha:1.0.0 .
 
-    - name: Construir la inagen de docker 
-      run: Docker build -t ghcr.io/yajanuha597/hello-yajnuha:1.0.0 .
+    - name: Login en GitHub Container Registry
+      run: |
+        echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-    - name: Login en Github container registry
-      run: echo "${{ secrets.GHCR_TOKEN}}" | docker login ghcr.io -u ${{github.actor}} --password-stdin
-
-    - name: Publicar la imagen
-      run: docker push ghcr.io/yajanuha597/hello-yajanuha:1.0.0
+    - name: publicar la imagen
+      run: |
+        docker push ghcr.io/ronalfcito/hello-yajanuha:1.0.0
